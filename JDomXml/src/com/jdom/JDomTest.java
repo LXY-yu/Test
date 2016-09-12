@@ -1,7 +1,9 @@
 package com.jdom;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,11 +16,16 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 public class JDomTest {
 	private static ArrayList<Book>booksList=new ArrayList<Book>();
-
-	public static void main(String[] args) {
+	
+	/*
+	 * 解析xml
+	 */
+	private void parseXML(){
 		//进行对books.xml文件的JDom解析
 		//准备工作
 		//1.创建一个saxBuilder的对象
@@ -88,7 +95,50 @@ public class JDomTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+	
+	/*
+	 * 创建xml文件
+	 */
+	private void createXML(){
+		//1.先生成一个根节点
+		Element rss=new Element("rss");
+		//2.为节点添加属性
+		rss.setAttribute("version", "2.0");
+		//3.生成一个document对象
+		Document document=new Document(rss);
 		
+		Element channel=new Element("channel");
+		rss.addContent(channel);
+		Element title=new Element("title");
+		title.setText("国内最新新闻");
+		channel.addContent(title);
+		//设置xml样式
+		Format format=Format.getCompactFormat();
+		format.setIndent("");//换行
+		format.setEncoding("GBK");
+		
+		//4.创建XMLOutputter的对象
+		XMLOutputter outputter=new XMLOutputter(format);
+		//5.利用outputter将document对象转换成xml文档
+		try {
+			outputter.output(document,new FileOutputStream(new File("rssnews.xml")));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+	public static void main(String[] args) {
+		JDomTest jt=new JDomTest();
+		jt.parseXML();
+		jt.createXML();
 
 	}
 
